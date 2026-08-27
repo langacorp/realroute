@@ -1,0 +1,7 @@
+{
+  "hosts": [
+    { "base": "https://example.org", "routes": ["/about/", "/contact/"] },
+    { "base": "https://shop.example.org" }
+  ],
+  "routes": ["/"]
+}
