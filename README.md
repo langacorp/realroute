@@ -146,6 +146,22 @@ when nothing was examined.
 - It says nothing about whether the content is *correct* — only whether it is
   *distinct* from a page that cannot exist.
 
+## The other two
+
+`realroute`, `leakform` and `samecheck` came out of the same week of measuring.
+Each one is standalone and depends on neither of the others.
+
+- **[leakform](https://github.com/langacorp/leakform)** — finds secrets in a git
+  repository by shape, across every ref. Born from a repository that was searched
+  for the first time five years after its last commit.
+- **[samecheck](https://github.com/langacorp/samecheck)** — measures whether the
+  copies that should be identical still are. Born from one file living in 29
+  copies, in 4 distinct versions, under 3 different naming conventions.
+
+What they share: coverage is always declared, a run that examined nothing is never
+a pass, and each ships a self-test that must fire in one direction and stay silent
+in the other.
+
 ## License
 
 MIT. See `LICENSE`.
