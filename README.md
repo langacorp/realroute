@@ -4,8 +4,8 @@ Check that a route really exists — by content, not by status code.
 
 ## The defect it was born from
 
-**2026-08-27.** Two sites in the same estate were checked with an invented URL that
-could not possibly exist:
+**2026-08-27.** Two of our own sites — `about` and `studios` — were checked with an
+invented URL that could not possibly exist:
 
 ```
 https://a.example/                                 -> 200  <title>Welcome …</title>
@@ -161,6 +161,15 @@ Each one is standalone and depends on neither of the others.
 What they share: coverage is always declared, a run that examined nothing is never
 a pass, and each ships a self-test that must fire in one direction and stay silent
 in the other.
+
+
+## Where this comes from
+
+LANGA runs 16 digital services across 5 networks on its own infrastructure. This
+tool came out of a defect we hit while running them. See
+[How we work](https://about.langa.tv/come-lavoriamo/).
+
+---
 
 ## License
 
