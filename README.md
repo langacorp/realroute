@@ -4,7 +4,7 @@ Check that a route really exists — by content, not by status code.
 
 ## The defect it was born from
 
-**2026-08-27.** Two of our own sites — [about.langa.tv](https://about.langa.tv) and [studios.langa.tv](https://studios.langa.tv) — were checked with an
+**2026-08-27.** Two of our own sites — two public sites in our own estate — were checked with an
 invented URL that could not possibly exist:
 
 ```
@@ -23,8 +23,8 @@ comparison would have had nothing to compare either.
 realroute exists because a green light that means "I did not look" is worse than a
 red one.
 
-It now runs across the client sites we monitor through [link.langa.tv](https://link.langa.tv). On 41 of
-them it found **2 that answer `200` to any address at all** — every broken link on
+It now runs across the client sites we monitor, where it found **two that answer
+`200` to any address at all** — every broken link on
 those sites shows a page instead of an error, and no status check will ever notice,
 because the site is up.
 
