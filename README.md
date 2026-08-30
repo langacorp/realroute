@@ -1,5 +1,7 @@
 # realroute
 
+[![self-test](https://github.com/langacorp/realroute/actions/workflows/selftest.yml/badge.svg)](https://github.com/langacorp/realroute/actions/workflows/selftest.yml)
+
 Check that a route really exists — by content, not by status code.
 
 ## The defect it was born from
