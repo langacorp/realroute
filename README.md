@@ -169,9 +169,16 @@ weeks of measuring. Each one is standalone and depends on none of the others.
 
 ## Where this comes from
 
-LANGA runs 16 digital services across 5 networks on its own infrastructure. This
-tool came out of a defect we hit while running them. See
-[How we work](https://about.langa.tv/how-we-work/).
+LANGA runs 16 digital services across 5 networks on its own infrastructure.
+This tool came out of a defect we hit while running them, and it now runs
+against the finished products:
+
+- [LANGA](https://langa.tv) — the ecosystem
+- [LANGA Studios](https://studios.langa.tv) — strategy, branding, platforms
+- [eFruit](https://efruit.langa.tv) — food marketplace for local producers
+- [TreeD](https://treed.langa.tv) — photorealistic renders, 3D tours, animation
+
+See [How we work](https://about.langa.tv/how-we-work/).
 
 ---
 
