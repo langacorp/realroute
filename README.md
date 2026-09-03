@@ -25,10 +25,10 @@ comparison would have had nothing to compare either.
 realroute exists because a green light that means "I did not look" is worse than a
 red one.
 
-It now runs across the client sites we monitor, where it found **two that answer
-`200` to any address at all** — every broken link on
-those sites shows a page instead of an error, and no status check will ever notice,
-because the site is up.
+Run across the client sites we monitor on **2026-08-28** — 41 hosts reachable out
+of 41 declared, 0 skipped — it found **two that answer `200` to any address at
+all**. On those two, every broken link shows a page instead of an error, and no
+status check notices, because the site is up.
 
 ## What it does
 
@@ -41,7 +41,7 @@ Then every declared route is compared against both. A route is reported as:
 
 | verdict | meaning |
 | --- | --- |
-| `ok` | distinct content — the route exists |
+| `ok` | content distinct from both the home page and the control route |
 | `same-as-control` | indistinguishable from a URL that cannot exist |
 | `same-as-home` | serves the home page instead of its own content |
 | `redirected` | moved elsewhere |
@@ -153,21 +153,25 @@ when nothing was examined.
 - It says nothing about whether the content is *correct* — only whether it is
   *distinct* from a page that cannot exist.
 
-## The other three
+## The other tools
 
-`realroute`, `leakform`, `samecheck` and `provenreal` came out of the same
-weeks of measuring. Each one is standalone and depends on none of the others.
+Each came out of a defect measured on our own estate. Each one is standalone
+and depends on none of the others.
 
 - **[leakform](https://github.com/langacorp/leakform)** — finds secrets in a git
-  repository by shape, across every ref. Born from a repository that was searched
-  for the first time five years after its last commit.
+  repository by shape, across every ref.
 - **[samecheck](https://github.com/langacorp/samecheck)** — measures whether the
-  copies that should be identical still are. Born from a component that turned
-  out to have six distinct contents across its installations.
+  copies that should be identical still are, and never says which one is right.
 - **[provenreal](https://github.com/langacorp/provenreal)** — compares what a
-  system claims with what can be measured. Born from six different numbers
-  answering the same question.
+  system claims with what can be measured, from independent sources.
+- **[countdrift](https://github.com/langacorp/countdrift)** — finds numbers
+  written by hand that no longer match their source.
+- **[kemproof](https://github.com/langacorp/kemproof)** — attests that an
+  ML-KEM-768 key exchange really happened. It does not encrypt anything.
 
+The set is kept on the [organisation profile](https://github.com/langacorp).
+It is not written here as a count, because a number typed by hand is the thing
+countdrift exists to find.
 
 ## Where this comes from
 
