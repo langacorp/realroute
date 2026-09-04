@@ -5,6 +5,8 @@ Dates are the date of the commit, not of a release.
 
 ## 2026-09-04
 
+- First release archived by Zenodo. v1.1.0 was published before the switch was
+  on, and Zenodo only archives releases made after it: that tag is not citable.
 - CITATION.cff: version and date match the release. Zenodo reads this file, so
   a stale version here is a stale version in the archived record.
 
