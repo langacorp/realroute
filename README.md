@@ -1,6 +1,7 @@
 # realroute
 
 [![self-test](https://github.com/langacorp/realroute/actions/workflows/selftest.yml/badge.svg)](https://github.com/langacorp/realroute/actions/workflows/selftest.yml)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.22298783-blue)](https://doi.org/10.5281/zenodo.22298783)
 
 Check that a route really exists — by content, not by status code.
 
