@@ -14,6 +14,9 @@ Dates are the date of the commit, not of a release.
   `server-error`, and the exit code of such a run from 0 to 1.
 - Route `/` is judged by the status of the home page. Before, it was reported
   `ok` whatever the home page answered, including 404 and 500.
+- When the control route cannot be fetched, the host's routes are listed as not
+  examined, with the reason. Before, they were compared against a failed fetch,
+  which matches nothing, so a catch-all site was reported `ok` everywhere.
 
 ## 2026-09-04
 

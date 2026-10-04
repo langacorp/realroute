@@ -271,6 +271,14 @@ def check_host(host, timeout=10.0, seed=None):
                                      "body": home.body_hash})
             continue
         url = base + ("/" + route.lstrip("/"))
+        if not control.ok:
+            # Without a control page there is nothing to compare against: a
+            # catch-all would look like distinct content and be called ok.
+            # Not examined is the true answer.
+            result["skipped"].append({
+                "route": url,
+                "reason": f"control route unreachable ({control.error})"})
+            continue
         f = fetch(url, timeout=timeout)
         result["routes"].append({
             "route": route, "status": f.status, "verdict": judge(f, home, control),
