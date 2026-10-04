@@ -218,20 +218,33 @@ def load_config(path):
                 "routes": ["/about/", "/contact/"]}],
      "routes": ["/"]}
     Routes given at the top level apply to every host.
+
+    Every malformed shape raises ValueError with a message. Before, a "routes"
+    written as a string was split into one route per character, without a word.
     """
     with open(path, "r", encoding="utf-8") as fh:
         cfg = json.load(fh)
-    if not isinstance(cfg, dict) or "hosts" not in cfg:
+    if not isinstance(cfg, dict) or not isinstance(cfg.get("hosts"), list):
         raise ValueError("config needs a 'hosts' list")
-    shared = list(cfg.get("routes", []))
+    shared = _routes(cfg.get("routes", []), "top-level 'routes'")
     hosts = []
-    for h in cfg["hosts"]:
+    for i, h in enumerate(cfg["hosts"]):
         if isinstance(h, str):
             h = {"base": h}
-        base = h["base"].rstrip("/")
-        routes = list(h.get("routes", [])) + shared
-        hosts.append({"base": base, "routes": routes or ["/"]})
+        if not isinstance(h, dict):
+            raise ValueError(f"hosts[{i}] must be a URL string or an object")
+        base = h.get("base")
+        if not isinstance(base, str) or not base.strip():
+            raise ValueError(f"hosts[{i}] needs a 'base' URL string")
+        routes = _routes(h.get("routes", []), f"hosts[{i}].routes") + shared
+        hosts.append({"base": base.strip().rstrip("/"), "routes": routes or ["/"]})
     return hosts
+
+
+def _routes(value, where):
+    if not isinstance(value, list) or not all(isinstance(r, str) for r in value):
+        raise ValueError(f"{where} must be a list of strings")
+    return list(value)
 
 
 # --------------------------------------------------------------------------
@@ -483,7 +496,12 @@ def main(argv=None):
     if not os.path.exists(args.config):
         p.error(f"config not found: {args.config}")
 
-    hosts = load_config(args.config)
+    try:
+        hosts = load_config(args.config)
+    except (OSError, ValueError) as e:
+        # exit 2, as for any usage error: exit 1 means a route is not ok, and
+        # a config that cannot be read says nothing about any route
+        p.error(f"invalid config {args.config}: {e}")
     res = run(hosts, timeout=args.timeout)
     if args.json:
         json.dump(res, sys.stdout, indent=2)

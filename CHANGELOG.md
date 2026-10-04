@@ -22,6 +22,11 @@ Dates are the date of the commit, not of a release.
 - Routes with non-ASCII characters or spaces are percent-encoded before the
   request. Before, the request was never sent and the route was reported
   `unreachable`. A route already written percent-encoded is sent unchanged.
+- The config is validated. A `routes` written as a string instead of a list was
+  split into one route per character without a word; it is now refused. A
+  config that is not valid JSON, has a host without `base`, or cannot be read
+  exits 2 with one line of explanation. Before, it printed a traceback and
+  exited 1, the same code as a route that is not `ok`.
 
 ## 2026-09-04
 
