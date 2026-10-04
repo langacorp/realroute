@@ -30,6 +30,8 @@ Dates are the date of the commit, not of a release.
 - A 308 redirect is followed on every Python version. Before Python 3.11 it was
   not, so the same route was `redirected` on one interpreter and `ok` on
   another.
+- The User-Agent links to the repository. It pointed to a GitHub account that
+  is not this project.
 
 ## 2026-09-04
 
