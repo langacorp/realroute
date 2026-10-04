@@ -47,6 +47,7 @@ Then every declared route is compared against both. A route is reported as:
 | `same-as-home` | serves the home page instead of its own content |
 | `redirected` | moved elsewhere |
 | `not-found` | an honest 4xx |
+| `server-error` | the server answered 5xx |
 | `unreachable` | the request itself failed |
 
 If the control route answers `200`, that fact is reported **on its own, before any

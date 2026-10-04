@@ -155,6 +155,13 @@ class TestJudge(unittest.TestCase):
         r = fetched(status=301, body="moved")
         self.assertEqual(rr.judge(r, self.home, self.control), rr.REDIRECTED)
 
+    def test_server_error_is_not_ok(self):
+        for status in (500, 502, 503):
+            with self.subTest(status=status):
+                r = fetched(status=status, body="database error")
+                self.assertEqual(rr.judge(r, self.home, self.control),
+                                 rr.SERVER_ERROR)
+
     def test_not_found(self):
         r = fetched(status=404, body="own 404")
         self.assertEqual(rr.judge(r, self.home, self.control), rr.NOT_FOUND)
@@ -230,6 +237,23 @@ class TestCheckHost(unittest.TestCase):
             r = rr.run([{"base": s.base, "routes": ["/"]}], timeout=5)
             self.assertEqual(s.requests.count("/"), 1)
         self.assertEqual(verdicts(r), {"/": rr.OK})
+
+    def test_route_answering_500_is_a_server_error(self):
+        site = Site({"/": (200, page("Home", "home"), {}),
+                     "/broken/": (500, page("Error", "database error"), {})})
+        with site as s:
+            r = rr.run([{"base": s.base, "routes": ["/broken/"]}], timeout=5)
+        self.assertEqual(verdicts(r), {"/broken/": rr.SERVER_ERROR})
+        self.assertNotEqual(rr.report(r, io.StringIO()), 0)
+
+    def test_home_route_takes_the_home_status(self):
+        cases = ((500, rr.SERVER_ERROR), (404, rr.NOT_FOUND), (200, rr.OK))
+        for status, expected in cases:
+            with self.subTest(status=status):
+                site = Site({"/": (status, page("Home", "home"), {})})
+                with site as s:
+                    r = rr.run([{"base": s.base, "routes": ["/"]}], timeout=5)
+                self.assertEqual(verdicts(r), {"/": expected})
 
     def test_unreachable_host_skips_every_route(self):
         base = f"http://127.0.0.1:{closed_port()}"

@@ -138,6 +138,7 @@ SAME_AS_HOME = "same-as-home"
 UNREACHABLE = "unreachable"
 NOT_FOUND = "not-found"
 REDIRECTED = "redirected"
+SERVER_ERROR = "server-error"
 
 VERDICT_HELP = {
     OK: "distinct content, the route exists",
@@ -146,6 +147,7 @@ VERDICT_HELP = {
     UNREACHABLE: "the request itself failed",
     NOT_FOUND: "an honest 4xx",
     REDIRECTED: "moved elsewhere",
+    SERVER_ERROR: "the server answered 5xx",
 }
 
 
@@ -189,10 +191,18 @@ def judge(route_fetch, home, control):
         return SAME_AS_CONTROL
     if same(route_fetch, home):
         return SAME_AS_HOME
-    if route_fetch.status in (301, 302, 303, 307, 308):
+    return status_verdict(route_fetch)
+
+
+def status_verdict(f):
+    """The verdict the status code alone allows, once content has been compared."""
+    if f.status in (301, 302, 303, 307, 308):
         return REDIRECTED
-    if 400 <= route_fetch.status < 500:
+    if 400 <= f.status < 500:
         return NOT_FOUND
+    # a 5xx is not a route that exists: before this check it fell through to ok
+    if f.status >= 500:
+        return SERVER_ERROR
     return OK
 
 
@@ -252,8 +262,11 @@ def check_host(host, timeout=10.0, seed=None):
 
     for route in host["routes"]:
         if route == "/":
+            # the home page is not compared with itself, but its status still
+            # counts: a home page that answers 500 is not ok
             result["routes"].append({"route": route, "status": home.status,
-                                     "verdict": OK, "title": home.title,
+                                     "verdict": status_verdict(home),
+                                     "title": home.title,
                                      "canonical": home.canonical,
                                      "body": home.body_hash})
             continue
