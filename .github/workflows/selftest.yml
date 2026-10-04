@@ -25,20 +25,36 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.9", "3.13"]
+        python: ["3.9", "3.11", "3.13"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
 
       # A file that does not compile is a test that never ran, and from the
       # outside it looks exactly like one that passed.
       - name: Compile
-        run: python -m compileall -q realroute.py
+        run: python -m compileall -q realroute.py tests
 
       # Both directions: it must fire on a planted case and stay silent on a
       # clean one. A check that only ever passes proves nothing.
       - name: Self-test
         run: python realroute.py --selftest
+
+      # Every verdict, in the direction where it must fire and in the one where
+      # it must stay silent. Local servers only: no test reaches the network.
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+
+      # The installed command must be the same tool: build the wheel, install
+      # it outside the checkout, and run the self-test through the entry point.
+      - name: Package
+        run: |
+          python -m pip wheel . -w "$RUNNER_TEMP/wheel" --no-deps
+          python -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install "$RUNNER_TEMP"/wheel/realroute-*.whl
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/venv/bin/realroute" --version
+          "$RUNNER_TEMP/venv/bin/realroute" --selftest

@@ -40,6 +40,10 @@ Dates are the date of the commit, not of a release.
   so it is written in one place. `python realroute.py` works as before.
 - README: the stated floor is Python 3.9, the oldest version CI runs. It said
   3.8, which nothing tested.
+- Tests: `python -m unittest discover -s tests -v` runs every verdict in both
+  directions against local servers. CI runs them on Python 3.9, 3.11 and 3.13,
+  next to the self-test, and builds and installs the package and runs the
+  `realroute` command.
 
 ## 2026-09-04
 
