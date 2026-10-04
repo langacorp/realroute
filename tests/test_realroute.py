@@ -222,6 +222,23 @@ class TestCheckHost(unittest.TestCase):
             r = rr.run([{"base": s.base, "routes": ["/home-again/"]}], timeout=5)
         self.assertEqual(verdicts(r), {"/home-again/": rr.SAME_AS_HOME})
 
+    def test_redirects_are_followed_the_same_way_for_every_code(self):
+        # urllib before Python 3.11 does not follow 308; the same site got a
+        # different verdict depending on the interpreter
+        routes = {"/": (200, page("Home", "home"), {}),
+                  "/about/": (200, page("About", "who we are"), {})}
+        for code in (301, 302, 303, 307, 308):
+            routes[f"/old-{code}/"] = (code, b"", {"Location": "/about/"})
+        with Site(routes) as s:
+            r = rr.run([{"base": s.base,
+                         "routes": [f"/old-{c}/" for c in (301, 302, 303, 307, 308)]}],
+                       timeout=5)
+        for route, verdict in verdicts(r).items():
+            with self.subTest(route=route):
+                self.assertEqual(verdict, rr.OK)
+        for x in r["hosts"][0]["routes"]:
+            self.assertEqual(x["status"], 200)
+
     def test_redirect_loop_is_redirected(self):
         with honest() as s:
             r = rr.run([{"base": s.base, "routes": ["/loop/"]}], timeout=5)

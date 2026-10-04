@@ -92,11 +92,23 @@ def body_fingerprint(raw):
     return hashlib.sha256(body).hexdigest()[:16], len(body)
 
 
+class _FollowRedirects(urllib.request.HTTPRedirectHandler):
+    """Follow 308 like 307. urllib learned 308 only in Python 3.11; before, a
+    308 stopped the fetch and the same site got a different verdict on an
+    older interpreter. Both codes keep the method, and this tool sends GET."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return super().redirect_request(req, fp, 307 if code == 308 else code,
+                                        msg, headers, newurl)
+
+    http_error_308 = urllib.request.HTTPRedirectHandler.http_error_302
+
+
 def fetch(url, timeout=10.0, max_bytes=2_000_000, follow=True):
     f = Fetch(url)
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT,
                                                "Accept": "text/html,*/*"})
-    opener = urllib.request.build_opener()
+    opener = urllib.request.build_opener(_FollowRedirects)
     if not follow:
         class NoRedirect(urllib.request.HTTPRedirectHandler):
             def redirect_request(self, *a, **k):

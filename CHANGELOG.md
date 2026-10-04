@@ -27,6 +27,9 @@ Dates are the date of the commit, not of a release.
   config that is not valid JSON, has a host without `base`, or cannot be read
   exits 2 with one line of explanation. Before, it printed a traceback and
   exited 1, the same code as a route that is not `ok`.
+- A 308 redirect is followed on every Python version. Before Python 3.11 it was
+  not, so the same route was `redirected` on one interpreter and `ok` on
+  another.
 
 ## 2026-09-04
 
