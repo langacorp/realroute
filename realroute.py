@@ -42,9 +42,12 @@ SCRIPT_STYLE_RE = re.compile(rb"<(script|style)[^>]*>.*?</\1>", re.I | re.S)
 TAG_RE = re.compile(rb"<[^>]+>")
 WS_RE = re.compile(rb"\s+")
 # values that change between two fetches of the same page and would make every
-# fingerprint unique: nonces, csrf tokens, timestamps, cache-busting query strings
+# fingerprint unique: nonces, csrf tokens, timestamps, cache-busting query strings.
+# The key must start a word: without the lookbehind "Contacts: Rome" lost
+# "ts: Rome" and became the same page as "Contacts: Milan".
 NOISE_RE = re.compile(
-    rb"""(?:nonce|csrf|token|_wpnonce|timestamp|ts|cb|v)\s*[=:]\s*["']?[A-Za-z0-9_\-]{4,}""",
+    rb"""(?<![A-Za-z0-9])(?:nonce|csrf|token|_wpnonce|timestamp|ts|cb|v)"""
+    rb"""\s*[=:]\s*["']?[A-Za-z0-9_\-]{4,}""",
     re.I)
 
 
