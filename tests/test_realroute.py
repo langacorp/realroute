@@ -319,6 +319,25 @@ class TestLoadConfig(unittest.TestCase):
             with self.assertRaises(ValueError):
                 rr.load_config(path)
 
+    def test_malformed_configs_are_refused_with_a_message(self):
+        cases = {
+            "routes as a string": {"hosts": [{"base": "https://example.org",
+                                              "routes": "/about/"}]},
+            "shared routes as a string": {"hosts": ["https://example.org"],
+                                          "routes": "/about/"},
+            "hosts as a string": {"hosts": "https://example.org"},
+            "host without base": {"hosts": [{"routes": ["/"]}]},
+            "base not a string": {"hosts": [{"base": 5}]},
+            "route not a string": {"hosts": [{"base": "https://example.org",
+                                              "routes": [5]}]},
+            "host is a number": {"hosts": [5]},
+        }
+        for name, cfg in cases.items():
+            with self.subTest(case=name), TempConfig(cfg) as path:
+                with self.assertRaises(ValueError) as cm:
+                    rr.load_config(path)
+                self.assertNotIsInstance(cm.exception, json.JSONDecodeError)
+
     def test_example_config_loads(self):
         path = os.path.join(os.path.dirname(os.path.dirname(
             os.path.abspath(__file__))), "hosts.example.json")
@@ -373,6 +392,24 @@ class TestCli(unittest.TestCase):
                                                  "realroute-no-such-file.json")])
         self.assertEqual(rc, 2)
         self.assertIn("config not found", err)
+
+    def test_invalid_config_is_a_usage_error_not_a_finding(self):
+        # exit 1 means "a route is not ok"; a config that cannot be read is a
+        # different outcome and must not share that code or print a traceback
+        for name, text in (("not json", "{hosts"),
+                           ("no base", '{"hosts": [{"routes": ["/"]}]}'),
+                           ("hosts a string", '{"hosts": "https://example.org"}')):
+            with self.subTest(case=name), TempConfig(text) as p:
+                rc, out, err = run_cli(["-c", p])
+                self.assertEqual(rc, 2)
+                self.assertIn("invalid config", err)
+                self.assertNotIn("Traceback", err)
+
+    def test_config_that_is_a_directory_is_a_usage_error(self):
+        with tempfile.TemporaryDirectory() as d:
+            rc, _, err = run_cli(["-c", d])
+        self.assertEqual(rc, 2)
+        self.assertNotIn("Traceback", err)
 
     def test_good_site_exits_zero(self):
         with honest() as s, TempConfig({"hosts": [{"base": s.base,
