@@ -17,6 +17,8 @@ Dates are the date of the commit, not of a release.
 - When the control route cannot be fetched, the host's routes are listed as not
   examined, with the reason. Before, they were compared against a failed fetch,
   which matches nothing, so a catch-all site was reported `ok` everywhere.
+- `--json` exits with the same code as the text report. Before, it always exited
+  0, including when routes were not `ok` and when nothing was examined.
 
 ## 2026-09-04
 

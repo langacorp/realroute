@@ -143,7 +143,7 @@ python3 realroute.py -c hosts.json --json
 ```
 
 Exit code is `0` when every examined route is `ok`, non-zero otherwise — including
-when nothing was examined.
+when nothing was examined. `--json` uses the same exit code.
 
 ## Limits, stated
 
