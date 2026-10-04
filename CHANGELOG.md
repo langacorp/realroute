@@ -8,6 +8,12 @@ Dates are the date of the commit, not of a release.
 - Fingerprint: a noise key (`ts`, `v`, `cb`, ...) is removed only when it starts
   a word. Before, "Contacts: Rome" lost "ts: Rome", so two different pages had
   the same fingerprint and a real route could be reported `same-as-control`.
+- New verdict `server-error` for a 5xx answer. Before, a route that answered
+  500 with its own error page fell through every check and was reported `ok`,
+  and the run exited 0. This changes the verdict of those routes from `ok` to
+  `server-error`, and the exit code of such a run from 0 to 1.
+- Route `/` is judged by the status of the home page. Before, it was reported
+  `ok` whatever the home page answered, including 404 and 500.
 
 ## 2026-09-04
 
