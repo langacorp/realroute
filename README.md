@@ -103,12 +103,25 @@ this one exists to make visible.
 
 ## Install
 
-None. Python 3.8+, standard library only, no dependencies.
+Python 3.9 or newer, standard library only, no dependencies. 3.9 is the oldest
+version CI runs.
+
+It is one file. Download it and run it:
 
 ```
 curl -O https://raw.githubusercontent.com/langacorp/realroute/main/realroute.py
 python3 realroute.py --selftest
 ```
+
+Or install it from git, which puts a `realroute` command on the path. It is not
+published on PyPI.
+
+```
+pipx install git+https://github.com/langacorp/realroute
+realroute --selftest
+```
+
+`pip install git+https://github.com/langacorp/realroute` works the same way.
 
 ## Prove it before you trust it
 
