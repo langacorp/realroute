@@ -3,7 +3,7 @@
 All notable changes to this project are recorded here.
 Dates are the date of the commit, not of a release.
 
-## Unreleased
+## v1.2.0 — 2026-10-04
 
 - Fingerprint: a noise key (`ts`, `v`, `cb`, ...) is removed only when it starts
   a word. Before, "Contacts: Rome" lost "ts: Rome", so two different pages had
