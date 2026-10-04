@@ -3,6 +3,12 @@
 All notable changes to this project are recorded here.
 Dates are the date of the commit, not of a release.
 
+## Unreleased
+
+- Fingerprint: a noise key (`ts`, `v`, `cb`, ...) is removed only when it starts
+  a word. Before, "Contacts: Rome" lost "ts: Rome", so two different pages had
+  the same fingerprint and a real route could be reported `same-as-control`.
+
 ## 2026-09-04
 
 - First release archived by Zenodo. v1.1.0 was published before the switch was

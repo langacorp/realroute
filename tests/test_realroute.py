@@ -76,6 +76,22 @@ class TestFingerprint(unittest.TestCase):
         b = b"<div>Hello</div><script>var t = 2;</script>"
         self.assertEqual(rr.body_fingerprint(a)[0], rr.body_fingerprint(b)[0])
 
+    def test_words_ending_like_a_noise_key_are_kept(self):
+        # "ts", "v" and "cb" are noise keys; "Contacts", "Nav" and "Arcb" are
+        # words. Stripping "ts: Rome" made two different pages look identical.
+        for a, b in (("Contacts: Rome", "Contacts: Milan"),
+                     ("Products: Shoes", "Products: Boots"),
+                     ("Rev: 2024-alpha", "Rev: 2025-gamma")):
+            with self.subTest(a=a):
+                self.assertNotEqual(rr.body_fingerprint(page("T", a))[0],
+                                    rr.body_fingerprint(page("T", b))[0])
+
+    def test_noise_key_at_start_of_word_is_still_removed(self):
+        self.assertEqual(rr.body_fingerprint(page("T", "ts=1700000000 hi"))[0],
+                         rr.body_fingerprint(page("T", "ts=1800000000 hi"))[0])
+        self.assertEqual(rr.body_fingerprint(page("T", "x _wpnonce=ab12cd34"))[0],
+                         rr.body_fingerprint(page("T", "x _wpnonce=ef56ab78"))[0])
+
     def test_different_text_differs(self):
         self.assertNotEqual(rr.body_fingerprint(page("A", "one"))[0],
                             rr.body_fingerprint(page("A", "two"))[0])
@@ -185,6 +201,14 @@ class TestCheckHost(unittest.TestCase):
         with honest() as s:
             r = rr.run([{"base": s.base, "routes": ["/nope/"]}], timeout=5)
         self.assertEqual(verdicts(r), {"/nope/": rr.NOT_FOUND})
+
+    def test_two_real_pages_that_differ_only_after_a_noise_like_word(self):
+        site = Site({"/": (200, page("Home", "home"), {}),
+                     "/rome/": (200, page("Office", "Contacts: Rome"), {})},
+                    default=(200, page("Office", "Contacts: Milan"), {}))
+        with site as s:
+            r = rr.run([{"base": s.base, "routes": ["/rome/"]}], timeout=5)
+        self.assertEqual(verdicts(r), {"/rome/": rr.OK})
 
     def test_route_serving_the_home_page(self):
         with honest() as s:
