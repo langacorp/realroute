@@ -391,6 +391,13 @@ class TestReport(unittest.TestCase):
 
 class TestCli(unittest.TestCase):
 
+    def test_version_matches_citation(self):
+        # one version, written in one place, and CITATION.cff agrees with it
+        path = os.path.join(os.path.dirname(SCRIPT), "CITATION.cff")
+        with open(path, encoding="utf-8") as fh:
+            line = [l for l in fh if l.startswith("version:")][0]
+        self.assertEqual(line.split(":", 1)[1].strip().strip('"'), rr.__version__)
+
     def test_version(self):
         rc, out, _ = run_cli(["--version"])
         self.assertEqual(rc, 0)

@@ -28,7 +28,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "0.1.0"
+__version__ = "1.1.1"
 USER_AGENT = f"realroute/{__version__} (+https://github.com/langacorp/realroute)"
 
 # --------------------------------------------------------------------------
