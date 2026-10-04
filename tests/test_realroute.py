@@ -255,6 +255,22 @@ class TestCheckHost(unittest.TestCase):
                     r = rr.run([{"base": s.base, "routes": ["/"]}], timeout=5)
                 self.assertEqual(verdicts(r), {"/": expected})
 
+    def test_failed_control_skips_routes_instead_of_calling_them_ok(self):
+        # a catch-all that drops the connection on the control path only:
+        # nothing was compared, so nothing may be called ok
+        def default(path):
+            if path.startswith("/realroute-control-"):
+                return None
+            return (200, page("Welcome", "same for all"), {})
+        site = Site({"/": (200, page("Home", "home"), {})}, default=default)
+        with site as s:
+            r = rr.run([{"base": s.base, "routes": ["/", "/a/", "/b/"]}], timeout=5)
+        h = r["hosts"][0]
+        self.assertEqual([x["route"] for x in h["routes"]], ["/"])
+        self.assertEqual(r["coverage"]["routes_skipped"], 2)
+        self.assertIn("control route unreachable",
+                      r["coverage"]["not_examined"][0]["reason"])
+
     def test_unreachable_host_skips_every_route(self):
         base = f"http://127.0.0.1:{closed_port()}"
         r = rr.run([{"base": base, "routes": ["/a/", "/b/"]}], timeout=2)
