@@ -19,6 +19,9 @@ Dates are the date of the commit, not of a release.
   which matches nothing, so a catch-all site was reported `ok` everywhere.
 - `--json` exits with the same code as the text report. Before, it always exited
   0, including when routes were not `ok` and when nothing was examined.
+- Routes with non-ASCII characters or spaces are percent-encoded before the
+  request. Before, the request was never sent and the route was reported
+  `unreachable`. A route already written percent-encoded is sent unchanged.
 
 ## 2026-09-04
 

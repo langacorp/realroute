@@ -271,6 +271,17 @@ class TestCheckHost(unittest.TestCase):
         self.assertIn("control route unreachable",
                       r["coverage"]["not_examined"][0]["reason"])
 
+    def test_non_ascii_route_is_requested_percent_encoded(self):
+        site = Site({"/": (200, page("Home", "home"), {}),
+                     "/citt%C3%A0/": (200, page("Citta", "a real page"), {}),
+                     "/a%20b/": (200, page("Space", "another page"), {})})
+        with site as s:
+            r = rr.run([{"base": s.base,
+                         "routes": ["/citt\u00e0/", "/a b/", "/citt%C3%A0/"]}],
+                       timeout=5)
+        self.assertEqual(verdicts(r), {"/citt\u00e0/": rr.OK, "/a b/": rr.OK,
+                                       "/citt%C3%A0/": rr.OK})
+
     def test_unreachable_host_skips_every_route(self):
         base = f"http://127.0.0.1:{closed_port()}"
         r = rr.run([{"base": base, "routes": ["/a/", "/b/"]}], timeout=2)
