@@ -249,6 +249,10 @@ class TestCheckHost(unittest.TestCase):
             r = rr.run([{"base": s.base, "routes": ["/drop/"]}], timeout=5)
         self.assertEqual(verdicts(r), {"/drop/": rr.UNREACHABLE})
 
+    def test_user_agent_names_the_repository(self):
+        self.assertIn("https://github.com/langacorp/realroute", rr.USER_AGENT)
+        self.assertIn(rr.__version__, rr.USER_AGENT)
+
     def test_home_route_is_examined_without_a_second_fetch(self):
         with honest() as s:
             r = rr.run([{"base": s.base, "routes": ["/"]}], timeout=5)
