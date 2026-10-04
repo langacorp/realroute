@@ -375,6 +375,20 @@ class TestCli(unittest.TestCase):
             rc, out, _ = run_cli(["-c", p])
         self.assertEqual(rc, 1, out)
 
+    def test_json_exit_code_matches_text_exit_code(self):
+        dead = f"http://127.0.0.1:{closed_port()}"
+        with catch_all() as bad, honest() as good:
+            cases = (("bad", {"hosts": [{"base": bad.base, "routes": ["/a/"]}]}, 1),
+                     ("good", {"hosts": [{"base": good.base, "routes": ["/about/"]}]}, 0),
+                     ("empty", {"hosts": [{"base": dead, "routes": ["/a/"]}]}, 1))
+            for name, cfg, expected in cases:
+                with self.subTest(case=name), TempConfig(cfg) as p:
+                    text_rc, _, _ = run_cli(["-c", p])
+                    json_rc, out, _ = run_cli(["-c", p, "--json"])
+                    json.loads(out)
+                    self.assertEqual(text_rc, expected)
+                    self.assertEqual(json_rc, expected)
+
     def test_json_output_is_json(self):
         with honest() as s, TempConfig({"hosts": [{"base": s.base,
                                                     "routes": ["/about/"]}]}) as p:

@@ -17,6 +17,7 @@ Standard library only. No dependencies. MIT licensed.
 import argparse
 import hashlib
 import http.client
+import io
 import json
 import os
 import random
@@ -426,7 +427,6 @@ def selftest(stream=sys.stdout):
         failures.append("the good site was wrongly flagged as answering everything")
 
     # a check that examined nothing must never look like a pass
-    import io
     r = run([{"base": "http://127.0.0.1:1", "routes": routes}], timeout=2)
     stream.write("direction 3 - an empty run must not look like a pass\n")
     stream.write(f"  hosts_reachable = {r['coverage']['hosts_reachable']}, "
@@ -479,8 +479,11 @@ def main(argv=None):
     if args.json:
         json.dump(res, sys.stdout, indent=2)
         sys.stdout.write("\n")
-        return 0
-    bad = report(res)
+        # same exit code as the text report: a machine reading the JSON must
+        # not get a pass that a human reading the text would not
+        bad = report(res, io.StringIO())
+    else:
+        bad = report(res)
     return 1 if bad else 0
 
 
