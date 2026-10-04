@@ -32,6 +32,9 @@ Dates are the date of the commit, not of a release.
   another.
 - The User-Agent links to the repository. It pointed to a GitHub account that
   is not this project.
+- `__version__` said 0.1.0 through every release. `--version`, the `version`
+  field of `--json` and the User-Agent now carry the released version, and a
+  test checks that CITATION.cff agrees with it.
 
 ## 2026-09-04
 
