@@ -238,6 +238,15 @@ def load_config(path):
 # the run
 # --------------------------------------------------------------------------
 
+def quote_route(route):
+    """The path as it goes on the wire. http.client refuses anything but ASCII,
+    so "/citta/" with an accent failed before any request and was reported
+    unreachable. Characters that are already legal, including "%", are kept, so a
+    route written percent-encoded is sent unchanged."""
+    return urllib.parse.quote("/" + route.lstrip("/"),
+                              safe="/%?#=&;:@!$'()*+,~[]")
+
+
 def check_host(host, timeout=10.0, seed=None):
     base = host["base"]
     result = {"host": base, "routes": [], "answers_everything": False,
@@ -271,7 +280,7 @@ def check_host(host, timeout=10.0, seed=None):
                                      "canonical": home.canonical,
                                      "body": home.body_hash})
             continue
-        url = base + ("/" + route.lstrip("/"))
+        url = base + quote_route(route)
         if not control.ok:
             # Without a control page there is nothing to compare against: a
             # catch-all would look like distinct content and be called ok.
