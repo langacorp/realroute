@@ -526,5 +526,10 @@ def main(argv=None):
     return 1 if bad else 0
 
 
+def _entry():
+    """Console script entry point installed by pip as `realroute`."""
+    sys.exit(main())
+
+
 if __name__ == "__main__":
     sys.exit(main())

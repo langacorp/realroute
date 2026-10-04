@@ -35,6 +35,11 @@ Dates are the date of the commit, not of a release.
 - `__version__` said 0.1.0 through every release. `--version`, the `version`
   field of `--json` and the User-Agent now carry the released version, and a
   test checks that CITATION.cff agrees with it.
+- `pyproject.toml`: the tool can be installed with pip or pipx from git, which
+  adds a `realroute` command. The version is read from `realroute.__version__`,
+  so it is written in one place. `python realroute.py` works as before.
+- README: the stated floor is Python 3.9, the oldest version CI runs. It said
+  3.8, which nothing tested.
 
 ## 2026-09-04
 
